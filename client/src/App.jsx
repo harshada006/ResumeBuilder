@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard'
 import ResumeBuilder from './pages/ResumeBuilder'
 import Preview from './pages/Preview'
 import Login from './pages/Login'
+import PortfolioView from './pages/PortfolioView'
 import { AuthProvider } from './context/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 
@@ -15,8 +16,9 @@ const App = () => {
       <Routes>
         <Route path='/' element={<Home/>}/>
         <Route path='/login' element={<Login/>}/>
-        {/* Public resume preview link */}
+        {/* Public resume preview and portfolio links */}
         <Route path='/view/:resumeId' element={<Preview/>}/>
+        <Route path='/portfolio/:resumeId' element={<PortfolioView/>}/>
         
         {/* Protected app workspace */}
         <Route path='/app' element={<ProtectedRoute />}>

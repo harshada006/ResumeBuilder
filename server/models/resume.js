@@ -169,6 +169,16 @@ const resumeSchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
+
+    portfolio_layout: {
+      type: String,
+      default: "Sleek Dark",
+    },
+
+    portfolio_enabled: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,
