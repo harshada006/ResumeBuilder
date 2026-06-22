@@ -3,21 +3,20 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = () => {
-  const { user, loading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50">
-        <div className="relative w-16 h-16">
-          <div className="absolute inset-0 rounded-full border-4 border-orange-100 animate-pulse"></div>
-          <div className="absolute inset-0 rounded-full border-4 border-t-orange-500 animate-spin"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="mt-4 text-slate-600 font-medium animate-pulse">Loading secure session...</p>
         </div>
-        <p className="mt-4 text-slate-500 font-medium animate-pulse">Authenticating...</p>
       </div>
     );
   }
 
-  if (!user) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 

@@ -1,131 +1,161 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { Mail, Lock, User, ArrowRight, Loader2 } from 'lucide-react';
 
 const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const { login, signup, user } = useAuth();
+  const [loading, setLoading] = useState(false);
+
+  const { login, register, isAuthenticated } = useAuth();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
-  // Redirect if user is already logged in
-  React.useEffect(() => {
-    if (user) {
+  useEffect(() => {
+    // If user is already logged in, redirect to dashboard
+    if (isAuthenticated) {
       navigate('/app');
     }
-  }, [user, navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password || (!isLogin && !name)) {
+      showToast('Please fill in all required fields.', 'error');
       return;
     }
-    setSubmitting(true);
-    let result;
+
+    setLoading(true);
     if (isLogin) {
-      result = await login(email, password);
+      const result = await login(email, password);
+      setLoading(false);
+      if (result.success) {
+        showToast('Successfully logged in!', 'success');
+        navigate('/app');
+      } else {
+        showToast(result.message || 'Invalid email or password.', 'error');
+      }
     } else {
-      result = await signup(name, email, password);
-    }
-    setSubmitting(false);
-    if (result.success) {
-      navigate('/app');
+      const result = await register(name, email, password);
+      setLoading(false);
+      if (result.success) {
+        showToast('Account created successfully!', 'success');
+        navigate('/app');
+      } else {
+        showToast(result.message || 'Registration failed.', 'error');
+      }
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 relative overflow-hidden">
-      {/* Dynamic Background Accents */}
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-orange-100/40 blur-3xl -z-10"></div>
-      <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-amber-100/40 blur-3xl -z-10"></div>
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12 relative overflow-hidden">
+      {/* Background Decorative Blobs */}
+      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-orange-100/50 blur-3xl -z-10"></div>
+      <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-amber-100/50 blur-3xl -z-10"></div>
 
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-8 relative">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-8 transition-all duration-300">
         <div className="flex flex-col items-center mb-8">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500 text-white font-extrabold text-2xl shadow-lg shadow-orange-500/20 mb-3">
-            R
-          </div>
-          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+          <img src="/logo.svg" alt="logo" className="h-12 w-auto mb-4" />
+          <h2 className="text-3xl font-bold text-slate-800">
             {isLogin ? 'Welcome Back' : 'Create Account'}
           </h2>
-          <p className="text-sm text-slate-500 mt-2 text-center">
-            {isLogin
-              ? 'Enter your credentials to manage your AI resumes'
-              : 'Sign up to build ATS-friendly resumes with Gemini AI'}
+          <p className="text-slate-500 text-sm mt-1.5 text-center">
+            {isLogin 
+              ? 'Log in to access your resumes and continue editing.' 
+              : 'Sign up to build ATS-friendly resumes with AI features.'}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {!isLogin && (
-            <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Full Name</label>
-              <input
-                type="text"
-                placeholder="e.g. John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 outline-none focus:border-orange-500 focus:bg-white transition"
-              />
+            <div className="relative">
+              <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">
+                Full Name
+              </label>
+              <div className="relative">
+                <User className="absolute left-3 top-3.5 text-slate-400 w-5 h-5" />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your full name"
+                  className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition bg-slate-50/50 text-slate-800 text-sm"
+                  required
+                />
+              </div>
             </div>
           )}
 
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Email Address</label>
-            <input
-              type="email"
-              placeholder="name@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 outline-none focus:border-orange-500 focus:bg-white transition"
-            />
+          <div className="relative">
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">
+              Email Address
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-3.5 text-slate-400 w-5 h-5" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition bg-slate-50/50 text-slate-800 text-sm"
+                required
+              />
+            </div>
           </div>
 
-          <div className="space-y-1">
-            <div className="flex justify-between items-center">
-              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Password</label>
+          <div className="relative">
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-wider">
+              Password
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-3.5 text-slate-400 w-5 h-5" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition bg-slate-50/50 text-slate-800 text-sm"
+                required
+              />
             </div>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 outline-none focus:border-orange-500 focus:bg-white transition"
-            />
           </div>
 
           <button
             type="submit"
-            disabled={submitting}
-            className="w-full py-3.5 mt-2 rounded-xl text-white font-semibold bg-orange-500 hover:bg-orange-600 active:scale-[0.99] disabled:opacity-50 transition shadow-md shadow-orange-500/10 cursor-pointer flex items-center justify-center"
+            disabled={loading}
+            className="w-full py-3.5 px-4 rounded-xl text-white font-semibold bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 focus:ring-4 focus:ring-orange-200 shadow-md shadow-orange-500/20 transition duration-150 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
           >
-            {submitting ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                </svg>
-                Processing...
-              </span>
+            {loading ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              isLogin ? 'Sign In' : 'Create Account'
+              <>
+                <span>{isLogin ? 'Sign In' : 'Register'}</span>
+                <ArrowRight className="w-4 h-4" />
+              </>
             )}
           </button>
         </form>
 
-        <div className="text-center mt-6 text-sm text-slate-500">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-          <button
-            type="button"
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-orange-600 font-semibold hover:underline cursor-pointer bg-transparent border-none p-0 outline-none"
-          >
-            {isLogin ? 'Create one' : 'Sign In'}
-          </button>
+        <div className="mt-8 pt-6 border-t border-slate-100 text-center">
+          <p className="text-sm text-slate-500">
+            {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
+            <button
+              type="button"
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setName('');
+                setEmail('');
+                setPassword('');
+              }}
+              className="text-orange-600 font-semibold hover:underline transition cursor-pointer"
+            >
+              {isLogin ? 'Create Account' : 'Sign In'}
+            </button>
+          </p>
         </div>
       </div>
     </div>
