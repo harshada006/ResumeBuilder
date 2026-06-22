@@ -1,5 +1,5 @@
 import Resume from "../models/resume.js";
-import ai from "../configs/ai.js";
+import ai, { aiModel } from "../configs/ai.js";
 
 export const enhanceProfessionalSummary = async (req, res) => {
   try {
@@ -8,7 +8,7 @@ export const enhanceProfessionalSummary = async (req, res) => {
       return res.status(400).json({ message: "missing required fields" });
     }
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         {
           role: "system",
@@ -37,7 +37,7 @@ export const enhanceJobDescription = async (req, res) => {
       return res.status(400).json({ message: "missing required fields" });
     }
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         {
           role: "system",
@@ -129,7 +129,7 @@ Provide the extracted data in the following JSON format:
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         {
           role: "system",
@@ -165,7 +165,7 @@ export const suggestSkills = async (req, res) => {
       return res.status(400).json({ message: "missing required fields" });
     }
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         {
           role: "system",
@@ -270,7 +270,7 @@ The output JSON MUST match this exact schema structure:
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
@@ -321,7 +321,7 @@ Provide the assessment in the following JSON format:
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
@@ -363,7 +363,7 @@ Provide the comparison in the following JSON format:
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
@@ -402,7 +402,7 @@ Ensure the letter includes:
 Do NOT include markdown syntax or labels like "Subject:" or "To:". Write a ready-to-use letter.`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
@@ -446,7 +446,7 @@ Format the response exactly as this JSON structure:
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
@@ -482,7 +482,7 @@ Provide the output in the following JSON structure:
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
@@ -524,7 +524,7 @@ Provide the roast in this JSON format:
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
@@ -558,7 +558,7 @@ Format the response exactly as:
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
@@ -603,7 +603,7 @@ Provide career insights in the following JSON format:
 }`;
 
     const response = await ai.chat.completions.create({
-      model: process.env.OPENAI_MODEL,
+      model: aiModel,
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: userPrompt }
